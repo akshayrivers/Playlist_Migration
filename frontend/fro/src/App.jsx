@@ -12,7 +12,7 @@ function App() {
   // Fetch playlists when the component mounts
   const fetchPlaylists = async () => {
     try {
-      const response = await axios.get('http://192.168.246.67:3001/request/spotify-getplaylist', {
+      const response = await axios.get('https://playlist-migration-backend-akshayrivers-projects.vercel.app/spotify-getplaylist', {
         withCredentials: true, 
       });
       setPlaylists(response.data);
@@ -34,7 +34,7 @@ function App() {
     try {
       setMigrationStatus('Migrating...');
       const response = await axios.post(
-        'http://192.168.246.67:3001/request/Migrate',
+        'https://playlist-migration-backend-akshayrivers-projects.vercel.app/request/Migrate',
         { playlistId: selectedPlaylistId },
         {
           headers: {
@@ -82,7 +82,7 @@ function App() {
 function SpotifyLogin() {
   const spotifyAuth = () => {
     console.log("Spotify login initiated");
-    window.location.href = 'http://192.168.246.67:3001/api/auth/spotify';
+    window.location.href = 'https://playlist-migration-backend-akshayrivers-projects.vercel.app/api/auth/spotify';
   };
 
   return <button onClick={spotifyAuth}>Spotify Login</button>;
@@ -91,7 +91,7 @@ function SpotifyLogin() {
 function GoogleLogin() {
   const googleAuth = () => {
     console.log("Google login initiated");
-    window.location.href = 'http://192.168.246.67:3001/api/auth/google';
+    window.location.href = 'https://playlist-migration-backend-akshayrivers-projects.vercel.app/api/auth/google';
   };
 
   return (

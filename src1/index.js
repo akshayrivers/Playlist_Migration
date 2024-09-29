@@ -23,7 +23,7 @@ async function bootstrap() {
     app.use(express.json());
     const PORT = process.env.PORT;
     app.use(cors({
-        origin: 'http://localhost:5173', 
+        origin: 'https://playlist-migration.vercel.app', 
         credentials: true 
     }));
     app.use(
