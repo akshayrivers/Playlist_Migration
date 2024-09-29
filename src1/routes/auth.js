@@ -1,6 +1,9 @@
 const { Router } = require('express');
+
 const passport = require("passport")
+
 const config = require('dotenv').config();
+
 //var SpotifyWebApi = require('spotify-web-api-node');
 
 const router = Router();
