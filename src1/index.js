@@ -1,4 +1,4 @@
-const passport = require("passport")
+const passport = require("passport");
 const config = require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -10,66 +10,71 @@ const cors = require("cors");
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
+// Initialize Passport
 passport.serializeUser((user, done) => {
-    // Serialize the entire user object into the session
     done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
-    // Deserialize the user object from the session
     done(null, user);
 });
 
-// 
-    const app = express();
-    app.use(express.json());
+// Initialize Express app
+const app = express();
+app.use(express.json());
 
-
-    // Connect to MongoDB
-    mongoose.connect(process.env.MONGODB_URL)
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URL)
     .then(() => console.log("MongoDB connected"))
-    .catch(err => console.log(err));
-    //const PORT = process.env.PORT;
+    .catch(err => {
+        console.error("MongoDB connection error:", err);
+        process.exit(1); // Exit process with failure
+    });
 
-    app.use(cors({
-        origin: 'https://playlist-migration.vercel.app', 
-        credentials: true 
-    }));
-    app.use(session({
-        secret: 'your-secret-key', 
-        resave: false,
-        saveUninitialized: true,
-        store: MongoStore.create({
-            mongoUrl: process.env.MONGODB_URL,
-            collectionName: 'sessions', 
-        }),
-        cookie: {
-            secure: true, // Set to true if using HTTPS
-            maxAge: 3600000, // Session expiration time (1 hour)
-        },
-    }));
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.get('/',(req,res)=>{
+// CORS setup
+app.use(cors({
+    origin: 'https://playlist-migration.vercel.app', 
+    credentials: true 
+}));
 
-        res.send("Testing Api");
-    })
-    app.use('/api/auth', authRoutes);
-    app.use('/request',wer);
+// Configure session
+app.use(session({
+    secret: 'your-secret-key', 
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URL,
+        collectionName: 'sessions', 
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // Set to true in production only
+        maxAge: 3600000, // Session expiration time (1 hour)
+    },
+}));
 
-    
-    // try {
-    //     app.listen(PORT, () => {
-    //         console.log(`Running on ${PORT}`);
-    //     });
-    // } catch (error) {
-    //     console.log(error);
-    // }
-//}
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
-//bootstrap();
+// Test route
+app.get('/', (req, res) => {
+    res.send("Testing API");
+});
+
+// Use authentication and other routes
+app.use('/api/auth', authRoutes);
+app.use('/request', wer);
+
+// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Something broke!');
+    res.status(err.status || 500).send('Something broke!');
 });
-module.exports=express;
+
+// Start the server
+const PORT = process.env.PORT || 5000; // Default to 5000 if PORT is not set
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
+module.exports = app; // Export the app for testing or other purposes
