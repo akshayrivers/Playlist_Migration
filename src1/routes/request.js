@@ -165,7 +165,8 @@ router.post('/Migrate',  async (req, res) => {
                 console.warn(`No video found for "${songTitle}" by ${artistName}`);
             }
         }
-
+        process.env.stoken="";
+        process.env.gtoken="";
         res.status(200).json({ message: 'Playlist migrated successfully!', playlistId });
     } catch (error) {
         console.error('Error during migration:', error);
