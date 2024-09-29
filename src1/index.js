@@ -18,7 +18,7 @@ passport.deserializeUser((user, done) => {
     done(null, user);
 });
 
-async function bootstrap() {
+// 
     const app = express();
     app.use(express.json());
     const PORT = process.env.PORT;
@@ -44,14 +44,18 @@ async function bootstrap() {
     app.use('/request',wer);
 
     
-    try {
-        app.listen(PORT, () => {
-            console.log(`Running on ${PORT}`);
-        });
-    } catch (error) {
-        console.log(error);
-    }
-}
+    // try {
+    //     app.listen(PORT, () => {
+    //         console.log(`Running on ${PORT}`);
+    //     });
+    // } catch (error) {
+    //     console.log(error);
+    // }
+//}
 
-bootstrap();
-//module.exports=express;
+//bootstrap();
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+module.exports=express;
