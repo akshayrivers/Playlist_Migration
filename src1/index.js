@@ -36,6 +36,10 @@ async function bootstrap() {
     );
     app.use(passport.initialize());
     app.use(passport.session());
+    app.get('/',(req,res)=>{
+
+        res.send("Testing Api");
+    })
     app.use('/api/auth', authRoutes);
     app.use('/request',wer);
 
