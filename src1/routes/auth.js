@@ -9,7 +9,13 @@ const config = require('dotenv').config();
 const router = Router();
 
 router.get('/google',passport.authenticate('google'),(req, res) => res.sendStatus(200));
-router.get('/google/redirect',passport.authenticate('google'), (req, res) => res.sendStatus(200).redirect('https://playlist-migration.vercel.app'));
+router.get('/google/redirect', 
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+        res.redirect('https://playlist-migration.vercel.app');
+        console.log("Google authentication successful");
+    }
+);
 
 // Spotify authentication routes
 router.get('/spotify', passport.authenticate('spotify', {
@@ -29,10 +35,10 @@ router.get('/spotify', passport.authenticate('spotify', {
 }));
 
 router.get('/spotify/redirect', 
-    passport.authenticate('spotify', { failureRedirect: '/login' }),
+    passport.authenticate('spotify', { failureRedirect: '/' }),
     (req, res) => {
         // Successful authentication
-        res.redirect('https://playlist-migration.vercel.app'); // Change to your desired redirect
+        res.redirect('https://playlist-migration.vercel.app'); 
         console.log("done man")
     }
 );
