@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
-
+//http://localhost:3001/request/Migrate'||
+//'http://localhost:3001/request/spotify-getplaylist'||
 function App() {
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
@@ -11,7 +12,7 @@ function App() {
   // Fetch playlists when the component mounts
   const fetchPlaylists = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/request/spotify-getplaylist', {
+      const response = await axios.get('http://192.168.246.67:3001/request/spotify-getplaylist', {
         withCredentials: true, 
       });
       setPlaylists(response.data);
@@ -33,7 +34,7 @@ function App() {
     try {
       setMigrationStatus('Migrating...');
       const response = await axios.post(
-        'http://localhost:3001/request/Migrate',
+        'http://192.168.246.67:3001/request/Migrate',
         { playlistId: selectedPlaylistId },
         {
           headers: {
@@ -81,7 +82,7 @@ function App() {
 function SpotifyLogin() {
   const spotifyAuth = () => {
     console.log("Spotify login initiated");
-    window.location.href = 'http://localhost:3001/api/auth/spotify';
+    window.location.href = 'http://192.168.246.67:3001/api/auth/spotify';
   };
 
   return <button onClick={spotifyAuth}>Spotify Login</button>;
@@ -90,7 +91,7 @@ function SpotifyLogin() {
 function GoogleLogin() {
   const googleAuth = () => {
     console.log("Google login initiated");
-    window.location.href = 'http://localhost:3001/api/auth/google';
+    window.location.href = 'http://192.168.246.67:3001/api/auth/google';
   };
 
   return (
@@ -132,5 +133,5 @@ function PlaylistList({ playlists, selectedPlaylistId, setSelectedPlaylistId }) 
 function Migrate({ handleMigrate }) {
   return <button onClick={handleMigrate}>Migrate</button>;
 }
-
+//'http://localhost:3001/api/auth/spotify'||'http://localhost:3001/api/auth/google'||
 export default App;

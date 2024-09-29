@@ -13,15 +13,12 @@ passport.use(
     },
     function(accessToken, refreshToken, params, profile, done) {
       try {
-        // Attach tokens to the user profile
         profile.accessToken = accessToken;
         profile.refreshToken = refreshToken;
-        // Optionally, store token expiry time
-        profile.tokenExpiresAt = Date.now() + params.expires_in * 1000; // Current time + expires_in seconds
+        profile.tokenExpiresAt = Date.now() + params.expires_in * 1000; 
 
         console.log('Google access token acquired.');
         process.env.gtoken=accessToken;
-        // Pass the updated profile to the done callback
         console.log(profile);
         done(null, profile);
       } catch (error) {
