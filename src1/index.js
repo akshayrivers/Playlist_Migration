@@ -26,10 +26,7 @@ passport.deserializeUser((user, done) => {
 
 
     // Connect to MongoDB
-    mongoose.connect(process.env.MONGODB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    mongoose.connect(process.env.MONGODB_URL)
     .then(() => console.log("MongoDB connected"))
     .catch(err => console.log(err));
     //const PORT = process.env.PORT;
