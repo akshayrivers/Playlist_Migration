@@ -6,22 +6,10 @@
         "use": "@vercel/node"
       }
     ],
-    "routes": [
+"routes": [
       {
-        "src": "/api/auth/spotify",
-      "dest": "/api/auth/spotify.js"
-      },
-      {
-        "src": "/api/auth/google",
-      "dest": "/api/auth/google.js"
-      },
-      {
-        "src": "/request/get-playlist",
-      "dest": "/request/get-playlist"
-      },
-      {
-        "src": "/request/Migrate",
-      "dest": "/request/Migrate"
+        "src": "/(.*)",
+        "dest": "index.js"
       }
     ]
   }
