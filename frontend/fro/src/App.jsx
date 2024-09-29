@@ -12,7 +12,7 @@ function App() {
   // Fetch playlists when the component mounts
   const fetchPlaylists = async () => {
     try {
-      const response = await axios.get('https://playlist-migration-backend-akshayrivers-projects.vercel.app/spotify-getplaylist', {
+      const response = await axios.get('https://playlist-migration-backend.vercel.app/request/spotify-getplaylist', {
         withCredentials: true, 
       });
       setPlaylists(response.data);
@@ -34,7 +34,7 @@ function App() {
     try {
       setMigrationStatus('Migrating...');
       const response = await axios.post(
-        'https://playlist-migration-backend-akshayrivers-projects.vercel.app/request/Migrate',
+        'https://playlist-migration-backend.vercel.app/request/Migrate',
         { playlistId: selectedPlaylistId },
         {
           headers: {
