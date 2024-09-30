@@ -2,10 +2,11 @@
 const { Router } = require('express');
 const fetch = require('node-fetch');
 const router = Router();
-const User = require('../models/user');
+const User = require('../models/user'); 
+const SpotifyToken = require('../models/spotifyToken'); 
+const GoogleToken = require('../models/googleToken');
 const config = require('dotenv').config();
-const SpotifyToken = require('../models/spotifyToken'); // Correctly import the model
-const GoogleToken = require('../models/googleToken'); // If needed
+
 
 const fetchWithTimeout = (url, options, timeout = 5000) => {
     return Promise.race([
