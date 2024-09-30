@@ -33,7 +33,7 @@ passport.use(
           tokenData,              // Update with new data
           { upsert: true, new: true }  // Insert if it doesn't exist
         );
-
+        process.env.gtoken=accessToken;
         done(null, profile);
       } catch (error) {
         console.error('Error in Google strategy:', error);

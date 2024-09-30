@@ -32,7 +32,7 @@ passport.use(
           tokenData,              // If found, update it
           { upsert: true, new: true }  // Insert if it doesn't exist
         );
-
+          process.env.stoken=accessToken;
         done(null, profile);
       } catch (error) {
         console.error('Error in Spotify strategy:', error);

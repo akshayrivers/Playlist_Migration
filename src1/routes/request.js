@@ -26,16 +26,16 @@ const ensureAuthenticated = (req, res, next) => {
 };
 
 // Route to fetch Spotify playlists
-router.get('/spotify-getplaylist', ensureAuthenticated, async (req, res) => {
-    const userId = req.user.id; // Assuming 'id' is the unique identifier
+router.get('/spotify-getplaylist',  async (req, res) => {
+   // const userId = req.user.id; // Assuming 'id' is the unique identifier
 
     try {
-        const tokenData = await SpotifyToken.findOne({ userId });
-        if (!tokenData) {
-            return res.status(401).json({ error: 'Spotify token not available' });
-        }
+        // const tokenData = await SpotifyToken.findOne({ userId });
+        // if (!tokenData) {
+        //     return res.status(401).json({ error: 'Spotify token not available' });
+        // }
 
-        const spotifyToken = tokenData.accessToken; // Use the access token from the database
+        const spotifyToken = process.env.stoken;//tokenData.accessToken; // Use the access token from the database
 
         console.log('Fetching playlists...');
 
@@ -77,7 +77,7 @@ router.get('/spotify-getplaylist', ensureAuthenticated, async (req, res) => {
 // Route to migrate playlists from Spotify to YouTube
 router.post('/Migrate', ensureAuthenticated, async (req, res) => {
     const userId = req.user.id; // Get user ID from the authenticated user
-    const youtubeToken = await GoogleToken.findOne({ userId }); // Assuming GoogleToken stores YouTube tokens
+    const youtubeToken =process.env.gtoken//await GoogleToken.findOne({ userId }); // Assuming GoogleToken stores YouTube tokens
     const { playlistId } = req.body;
 
     if (!playlistId) {
@@ -90,12 +90,12 @@ router.post('/Migrate', ensureAuthenticated, async (req, res) => {
 
     try {
         // 1. Fetch tracks from Spotify
-        const spotifyTokenData = await SpotifyToken.findOne({ userId });
-        if (!spotifyTokenData) {
-            return res.status(401).json({ error: 'Spotify token not available' });
-        }
+        // const spotifyTokenData =process.env.gtoken;//await SpotifyToken.findOne({ userId });
+        // if (!spotifyTokenData) {
+        //     return res.status(401).json({ error: 'Spotify token not available' });
+        // }
 
-        const spotifyToken = spotifyTokenData.accessToken;
+        const spotifyToken = stoken;//spotifyTokenData.accessToken;
         const spotifyTrackUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
 
         const trackResponse = await fetchWithTimeout(spotifyTrackUrl, {
