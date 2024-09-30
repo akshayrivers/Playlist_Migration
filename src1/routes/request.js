@@ -95,7 +95,7 @@ router.post('/Migrate', async (req, res) => {
         //     return res.status(401).json({ error: 'Spotify token not available' });
         // }
 
-        const spotifyToken = stoken;//spotifyTokenData.accessToken;
+        const spotifyToken = process.env.stoken;//spotifyTokenData.accessToken;
         const spotifyTrackUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
 
         const trackResponse = await fetchWithTimeout(spotifyTrackUrl, {
