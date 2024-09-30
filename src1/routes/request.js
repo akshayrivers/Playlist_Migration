@@ -1,11 +1,9 @@
-// routes/request.js
 const { Router } = require('express');
 const fetch = require('node-fetch');
 const router = Router();
 const config = require('dotenv').config();
-const SpotifyToken = require('../models/spotifyToken'); // Correctly import the model
-const GoogleToken = require('../models/googleToken'); // If needed
-
+// const passport = require("passport");
+require('../strategies/spotify');
 const fetchWithTimeout = (url, options, timeout = 5000) => {
     return Promise.race([
         fetch(url, options),
@@ -15,30 +13,19 @@ const fetchWithTimeout = (url, options, timeout = 5000) => {
     ]);
 };
 
-// Middleware to ensure the user is authenticated
-const ensureAuthenticated = (req, res, next) => {
-    console.log('Is Authenticated:', req.isAuthenticated());
-    console.log('User:', req.user);
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.status(401).json({ error: 'Unauthorized' });
-};
 
 // Route to fetch Spotify playlists
-router.get('/spotify-getplaylist',  async (req, res) => {
-   // const userId = req.user.id; // Assuming 'id' is the unique identifier
+router.get('/spotify-getplaylist', async (req, res) => {
+
+    const spotifyToken = process.env.stoken;
+
+    if (!spotifyToken) {
+        return res.status(401).json({ error: 'Spotify token not available' });
+    }
+
+    console.log('Fetching playlists...');
 
     try {
-        // const tokenData = await SpotifyToken.findOne({ userId });
-        // if (!tokenData) {
-        //     return res.status(401).json({ error: 'Spotify token not available' });
-        // }
-
-        const spotifyToken = process.env.stoken;//tokenData.accessToken; // Use the access token from the database
-
-        console.log('Fetching playlists...');
-
         const response = await fetchWithTimeout('https://api.spotify.com/v1/me/playlists', {
             method: 'GET',
             headers: {
@@ -57,14 +44,14 @@ router.get('/spotify-getplaylist',  async (req, res) => {
         
         const playlists = data.items.map(playlist => ({
             title: playlist.name,
-            tracksUrl: playlist.tracks.href,
-            playlistId: playlist.id 
+            tracksUrl: playlist.tracks.href ,
+            playlistId:playlist.id 
         }));
 
         // Example of logging playlists
         playlists.forEach(playlist => {
             console.log(`Title: ${playlist.title}, Tracks URL: ${playlist.tracksUrl}`);
-            console.log(`id: ${playlist.playlistId}`);
+            console.log(` id: ${playlist.playlistId}`);
         });
 
         res.json(playlists);
@@ -185,4 +172,5 @@ router.post('/Migrate',  async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 module.exports = router;
