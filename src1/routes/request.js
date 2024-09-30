@@ -75,8 +75,8 @@ router.get('/spotify-getplaylist',  async (req, res) => {
 });
 
 // Route to migrate playlists from Spotify to YouTube
-router.post('/Migrate', ensureAuthenticated, async (req, res) => {
-    const userId = req.user.id; // Get user ID from the authenticated user
+router.post('/Migrate', async (req, res) => {
+    //const userId = req.user.id; // Get user ID from the authenticated user
     const youtubeToken =process.env.gtoken//await GoogleToken.findOne({ userId }); // Assuming GoogleToken stores YouTube tokens
     const { playlistId } = req.body;
 
