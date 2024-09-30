@@ -14,6 +14,7 @@ passport.use(new SpotifyStrategy({
 
         if (!user) {
             user = new User({
+                _id:user.req.id,
                 username: profile.displayName,
                 spotifyId: profile.id,
             });

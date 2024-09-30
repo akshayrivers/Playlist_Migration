@@ -18,6 +18,7 @@ passport.use(
 
         if (!user) {
           user = new User({
+              _id:user.req.id,
               username: profile.displayName,
               googleId: profile.id,
           });
