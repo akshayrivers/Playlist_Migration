@@ -33,7 +33,7 @@ mongoose.connect(process.env.MONGODB_URL)
 
 // CORS setup
 app.use(cors({
-    origin: 'http://localhost:5173', 
+    origin: 'https://playlist-migration.vercel.app', 
     credentials: true 
 }));
 
@@ -56,6 +56,23 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Passport serializeUser and deserializeUser
+passport.serializeUser((user, done) => {
+    done(null, user.id); // Serialize only the user ID
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        // Attempt to find the user in SpotifyToken or GoogleToken
+        let user = await SpotifyToken.findOne({ userId: id });
+        if (!user) {
+            user = await GoogleToken.findOne({ userId: id });
+        }
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
+});
 // Test route
 app.get('/', (req, res) => {
     res.send("Testing API");
