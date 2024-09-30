@@ -35,7 +35,7 @@ mongoose.connect(process.env.MONGODB_URL)
 
 // CORS setup
 app.use(cors({
-    origin: 'http://playlist-migration.vercel.app', 
+    origin: 'https://playlist-migration.vercel.app', 
     credentials: true 
 }));
 
