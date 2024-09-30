@@ -75,30 +75,23 @@ router.get('/spotify-getplaylist',  async (req, res) => {
 });
 
 // Route to migrate playlists from Spotify to YouTube
-router.post('/Migrate', async (req, res) => {
-    //const userId = req.user.id; // Get user ID from the authenticated user
-    const youtubeToken =process.env.gtoken//await GoogleToken.findOne({ userId }); // Assuming GoogleToken stores YouTube tokens
+router.post('/Migrate',  async (req, res) => {
+    const youtubeToken = process.env.gtoken;
+    const spotifyToken = process.env.stoken;
     const { playlistId } = req.body;
 
     if (!playlistId) {
         return res.status(400).json({ error: 'Playlist ID is required' });
     }
 
-    if (!youtubeToken) {
-        return res.status(401).json({ error: 'YouTube token not available' });
+    const trackUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+    if (!youtubeToken || !spotifyToken) {
+        return res.status(401).json({ error: 'Required tokens not available' });
     }
 
     try {
         // 1. Fetch tracks from Spotify
-        // const spotifyTokenData =process.env.gtoken;//await SpotifyToken.findOne({ userId });
-        // if (!spotifyTokenData) {
-        //     return res.status(401).json({ error: 'Spotify token not available' });
-        // }
-
-        const spotifyToken = process.env.stoken;//spotifyTokenData.accessToken;
-        const spotifyTrackUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
-
-        const trackResponse = await fetchWithTimeout(spotifyTrackUrl, {
+        const trackResponse = await fetchWithTimeout(trackUrl, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${spotifyToken}`,
@@ -134,7 +127,7 @@ router.post('/Migrate', async (req, res) => {
         }
 
         const playlistData = await playlistResponse.json();
-        const newPlaylistId = playlistData.id; // Get the new playlist ID
+        const playlistId = playlistData.id; // Get the new playlist ID
 
         // 3. Search for each track on YouTube and add it to the new playlist
         for (const item of tracksData.items) {
@@ -143,7 +136,7 @@ router.post('/Migrate', async (req, res) => {
 
             // Search for the song on YouTube
             const searchResponse = await fetchWithTimeout(
-                `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(`${songTitle} ${artistName}`)}&key=${process.env.YOUTUBE_API_KEY}`,
+                `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(`${songTitle} ${artistName}`)}&key=${process.env.API_KEY}`,
                 {
                     method: 'GET',
                     headers: {
@@ -169,7 +162,7 @@ router.post('/Migrate', async (req, res) => {
                     },
                     body: JSON.stringify({
                         snippet: {
-                            playlistId: newPlaylistId,
+                            playlistId: playlistId,
                             resourceId: {
                                 kind: 'youtube#video',
                                 videoId: videoId
@@ -186,11 +179,10 @@ router.post('/Migrate', async (req, res) => {
             }
         }
 
-        res.status(200).json({ message: 'Playlist migrated successfully!', playlistId: newPlaylistId });
+        res.status(200).json({ message: 'Playlist migrated successfully!', playlistId });
     } catch (error) {
         console.error('Error during migration:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 module.exports = router;
