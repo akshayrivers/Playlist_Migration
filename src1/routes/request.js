@@ -30,8 +30,8 @@ router.get('/spotify-getplaylist', ensureAuthenticated, async (req, res) => {
         if (!user || !user.spotifyId) {
             return res.status(401).json({ error: 'Spotify token not available' });
         }
-        const stokenID=user.spotifyId;
-        const tokenData = await SpotifyToken.findOne({stokenID });
+        const spotifyId=user.spotifyId;
+        const tokenData = await SpotifyToken.findOne({spotifyId});
         if (!tokenData) {
             return res.status(401).json({ error: 'Spotify token not available' });
         }
