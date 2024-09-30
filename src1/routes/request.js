@@ -14,9 +14,15 @@ const fetchWithTimeout = (url, options, timeout = 5000) => {
         )
     ]);
 };
+const ensureAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.status(401).json({ error: 'Unauthorized' });
+}
 
 // Route to fetch Spotify playlists
-router.get('/spotify-getplaylist',  async (req, res) => {
+router.get('/spotify-getplaylist', ensureAuthenticated, async (req, res) => {
     const userId = req.user.id; // Assuming 'id' is the unique identifier
 
     try {
