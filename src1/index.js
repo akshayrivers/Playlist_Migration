@@ -12,14 +12,12 @@ const MongoStore = require('connect-mongo');
 
 // Initialize Passport
 passport.serializeUser((user, done) => {
-    done(null, user.id); 
+    done(null, user);
 });
 
-passport.deserializeUser(async (id, done) => {
-    const user = await user.findById(id);
-    done(null, user); 
+passport.deserializeUser((user, done) => {
+    done(null, user);
 });
-
 
 // Initialize Express app
 const app = express();
@@ -35,7 +33,7 @@ mongoose.connect(process.env.MONGODB_URL)
 
 // CORS setup
 app.use(cors({
-    origin: 'https://playlist-migration.vercel.app', 
+    origin: 'http://localhost:5173', 
     credentials: true 
 }));
 
@@ -67,7 +65,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/request', wer);
 
-// Error handling middleware
+//Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(err.status || 500).send('Something broke!');
@@ -79,4 +77,4 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-module.exports = app; // Export the app for testing or other purposes
+module.exports = app;

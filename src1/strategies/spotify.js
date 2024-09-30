@@ -1,43 +1,45 @@
 // strategies/spotify.js
 const passport = require("passport");
 const SpotifyStrategy = require('passport-spotify').Strategy;
-const User = require('../models/user');
-const SpotifyToken = require('../models/spotifyToken');
+require('dotenv').config();
+const SpotifyToken = require('../models/spotifyToken'); 
 
-passport.use(new SpotifyStrategy({
-    clientID: process.env.SPOTIFY_CLIENT_ID,
-    clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-    callbackURL: process.env.SPOTIFY_REDIRECT_URL,
-}, async (accessToken, refreshToken, expires_in, profile, done) => {
-    try {
-        let user = await User.findOne({ spotifyId: profile.id });
+passport.use(
+  new SpotifyStrategy(
+    {
+      clientID: process.env.SPOTIFY_CLIENT_ID,
+      clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+      callbackURL: process.env.SPOTIFY_REDIRECT_URL,
+    },
+    async function(accessToken, refreshToken, expires_in, profile, done) {
+      try {
+        profile.accessToken = accessToken;
+        profile.refreshToken = refreshToken;
+        profile.tokenExpiresAt = Date.now() + expires_in * 1000; 
 
-        if (!user) {
-            user = new User({
-                _id:user.req.id,
-                username: profile.displayName,
-                spotifyId: profile.id,
-            });
-            await user.save();
-        }
+        console.log('Spotify access token acquired.');
 
-        // Save the Spotify token
+        // Save the token to MongoDB
         const tokenData = {
-            userId: user.id, 
-            accessToken,
-            refreshToken,
-            tokenExpiresAt: new Date(Date.now() + expires_in * 1000),
+          userId: profile.id,
+          accessToken,
+          refreshToken,
+          tokenExpiresAt: new Date(Date.now() + expires_in * 1000),
         };
 
         await SpotifyToken.findOneAndUpdate(
-            { userId: user.id }, 
-            tokenData,              
-            { upsert: true, new: true }
+          { userId: profile.id }, // Search for an existing record
+          tokenData,              // If found, update it
+          { upsert: true, new: true }  // Insert if it doesn't exist
         );
 
-        done(null, user); // Pass the user object to serialize
-    } catch (error) {
+        done(null, profile);
+      } catch (error) {
+        console.error('Error in Spotify strategy:', error);
         done(error, null);
+      }
     }
-}));
+  )
+);
+
 console.log('Spotify Strategy initialized');

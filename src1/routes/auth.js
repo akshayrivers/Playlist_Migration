@@ -1,45 +1,43 @@
-const { Router } = require('express');
-
-const passport = require("passport")
-
-const config = require('dotenv').config();
-
-//var SpotifyWebApi = require('spotify-web-api-node');
-
-const router = Router();
-
-router.get('/google',passport.authenticate('google'),(req, res) => res.sendStatus(200));
-router.get('/google/redirect', 
-    passport.authenticate('google', { failureRedirect: '/' }),
-    (req, res) => {
-        res.redirect('https://playlist-migration.vercel.app');
-        console.log("Google authentication successful");
-    }
-);
-
-// Spotify authentication routes
+// routes/auth.js
+const express = require('express');
+const passport = require('passport');
+const router = express.Router();
+//https://playlist-migration-backend.vercel.app/api/auth/google/redirect
+//https://playlist-migration-backend.vercel.app/api/auth/spotify/redirect
+// Spotify Authentication Route
 router.get('/spotify', passport.authenticate('spotify', {
-    scope: [
-        'app-remote-control',
-        'user-read-email',
-        'user-read-private',
-        'playlist-read-collaborative',
-        'playlist-modify-public',
-        'playlist-read-private',
-
-        'user-library-modify',
-        'user-library-read',
-        'user-top-read',
-        'user-read-recently-played',
-    ]
+    scope: ['user-read-email', 'playlist-read-private'],
 }));
 
-router.get('/spotify/redirect', 
+// Spotify Callback Route
+router.get('/spotify/redirect',
     passport.authenticate('spotify', { failureRedirect: '/' }),
     (req, res) => {
-        // Successful authentication
-        res.redirect('https://playlist-migration.vercel.app'); 
-        console.log("done man")
+        // Successful authentication, redirect to frontend
+        res.redirect('http://localhost:5173'); // Update to your frontend URL
     }
 );
+
+// Google Authentication Route
+router.get('/google', passport.authenticate('google', {
+    scope: ['profile', 'email'],
+}));
+
+// Google Callback Route
+router.get('/google/redirect',
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+        // Successful authentication, redirect to frontend
+        res.redirect('http://localhost:5173'); // Update to your frontend URL
+    }
+);
+
+// Logout Route
+router.get('/logout', (req, res) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('http://localhost:5173'); // Update to your frontend URL
+    });
+});
+
 module.exports = router;

@@ -1,9 +1,9 @@
 // strategies/google.js
 const passport = require("passport");
-const User = require('../models/user');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 require('dotenv').config();
 const GoogleToken = require('../models/googleToken'); 
+
 passport.use(
   new GoogleStrategy(
     {
@@ -14,26 +14,15 @@ passport.use(
     },
     async function(accessToken, refreshToken, params, profile, done) {
       try {
-        let user = await User.findOne({googleId: profile.id});
-
-        if (!user) {
-          user = new User({
-              _id:user.req.id,
-              username: profile.displayName,
-              googleId: profile.id,
-          });
-          await user.save();
-      }
-        // profile.accessToken = accessToken;
-        // profile.refreshToken = refreshToken;
-        // profile.tokenExpiresAt = Date.now() + 3600 * 1000; // Example expiration
+        profile.accessToken = accessToken;
+        profile.refreshToken = refreshToken;
+        profile.tokenExpiresAt = Date.now() + 3600 * 1000; // Example expiration
 
         console.log('Google access token acquired.');
 
         // Prepare token data
         const tokenData = {
           userId: profile.id,
-          provider:'google',
           accessToken,
           refreshToken,
           tokenExpiresAt: new Date(Date.now() + 3600 * 1000),
