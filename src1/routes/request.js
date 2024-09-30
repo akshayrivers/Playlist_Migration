@@ -116,7 +116,7 @@ router.post('/Migrate', async (req, res) => {
         const playlistResponse = await fetchWithTimeout('https://www.googleapis.com/youtube/v3/playlists?part=snippet', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${youtubeToken.accessToken}`,
+                'Authorization': `Bearer ${youtubeToken}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -164,7 +164,7 @@ router.post('/Migrate', async (req, res) => {
                 const addVideoResponse = await fetchWithTimeout('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${youtubeToken.accessToken}`,
+                        'Authorization': `Bearer ${youtubeToken}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
