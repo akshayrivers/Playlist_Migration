@@ -14,7 +14,7 @@ router.get('/spotify/redirect',
     passport.authenticate('spotify', { failureRedirect: '/' }),
     (req, res) => {
         // Successful authentication, redirect to frontend
-        res.redirect('http://localhost:5173'); // Update to your frontend URL
+        res.redirect('https://playlist-migration.vercel.app'); // Update to your frontend URL
     }
 );
 
@@ -27,8 +27,8 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/redirect',
     passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-        // Successful authentication, redirect to frontend
-        res.redirect('http://localhost:5173'); // Update to your frontend URL
+
+        res.redirect('https://playlist-migration.vercel.app');
     }
 );
 
@@ -36,7 +36,7 @@ router.get('/google/redirect',
 router.get('/logout', (req, res) => {
     req.logout(function(err) {
         if (err) { return next(err); }
-        res.redirect('http://localhost:5173'); // Update to your frontend URL
+        res.redirect('https://playlist-migration.vercel.app'); 
     });
 });
 
