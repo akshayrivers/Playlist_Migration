@@ -24,7 +24,7 @@ const ensureAuthenticated = (req, res, next) => {
 };
 
 // Route to fetch Spotify playlists
-router.get('/spotify-getplaylist', ensureAuthenticated, async (req, res) => {
+router.get('/spotify-getplaylist',  async (req, res) => {
     const userId = req.user.id; // Assuming 'id' is the unique identifier
 
     try {
@@ -73,7 +73,7 @@ router.get('/spotify-getplaylist', ensureAuthenticated, async (req, res) => {
 });
 
 // Route to migrate playlists from Spotify to YouTube
-router.post('/Migrate', ensureAuthenticated, async (req, res) => {
+router.post('/Migrate',  async (req, res) => {
     const userId = req.user.id; // Get user ID from the authenticated user
     const youtubeToken = await GoogleToken.findOne({ userId }); // Assuming GoogleToken stores YouTube tokens
     const { playlistId } = req.body;
