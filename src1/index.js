@@ -10,13 +10,22 @@ const cors = require("cors");
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
-// Initialize Passport
+// Passport serializeUser and deserializeUser
 passport.serializeUser((user, done) => {
-    done(null, user);
+    done(null, user.id); // Serialize only the user ID
 });
 
-passport.deserializeUser((user, done) => {
-    done(null, user);
+passport.deserializeUser(async (id, done) => {
+    try {
+        // Attempt to find the user in SpotifyToken or GoogleToken
+        let user = await SpotifyToken.findOne({ userId: id });
+        if (!user) {
+            user = await GoogleToken.findOne({ userId: id });
+        }
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
 });
 
 // Initialize Express app
@@ -41,7 +50,7 @@ app.use(cors({
 app.use(session({
     secret: 'your-secret-key', 
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: process.env.MONGODB_URL,
         collectionName: 'sessions', 
@@ -56,23 +65,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Passport serializeUser and deserializeUser
-passport.serializeUser((user, done) => {
-    done(null, user.id); // Serialize only the user ID
-});
 
-passport.deserializeUser(async (id, done) => {
-    try {
-        // Attempt to find the user in SpotifyToken or GoogleToken
-        let user = await SpotifyToken.findOne({ userId: id });
-        if (!user) {
-            user = await GoogleToken.findOne({ userId: id });
-        }
-        done(null, user);
-    } catch (error) {
-        done(error, null);
-    }
-});
 // Test route
 app.get('/', (req, res) => {
     res.send("Testing API");
