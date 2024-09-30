@@ -34,6 +34,7 @@ passport.use(
           { upsert: true, new: true }  // Insert if it doesn't exist
         );
         process.env.gtoken=accessToken;
+        console.log(profile);
         done(null, profile);
       } catch (error) {
         console.error('Error in Google strategy:', error);
