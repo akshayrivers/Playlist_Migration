@@ -12,12 +12,14 @@ const MongoStore = require('connect-mongo');
 
 // Initialize Passport
 passport.serializeUser((user, done) => {
-    done(null, user);
+    done(null, user.id); 
 });
 
-passport.deserializeUser((user, done) => {
-    done(null, user);
+passport.deserializeUser(async (id, done) => {
+    const user = await user.findById(id);
+    done(null, user); 
 });
+
 
 // Initialize Express app
 const app = express();

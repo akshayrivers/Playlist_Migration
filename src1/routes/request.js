@@ -2,6 +2,7 @@
 const { Router } = require('express');
 const fetch = require('node-fetch');
 const router = Router();
+const User = require('../models/user');
 const config = require('dotenv').config();
 const SpotifyToken = require('../models/spotifyToken'); // Correctly import the model
 const GoogleToken = require('../models/googleToken'); // If needed
@@ -23,9 +24,13 @@ const ensureAuthenticated = (req, res, next) => {
 
 // Route to fetch Spotify playlists
 router.get('/spotify-getplaylist', ensureAuthenticated, async (req, res) => {
-    const userId = req.user.id; // Assuming 'id' is the unique identifier
-
+    const userId = req.user.id; // Passport user ID
+    const user = await User.findById(userId);
     try {
+        if (!user || !user.spotifyId) {
+            return res.status(401).json({ error: 'Spotify token not available' });
+        }
+
         const tokenData = await SpotifyToken.findOne({ userId });
         if (!tokenData) {
             return res.status(401).json({ error: 'Spotify token not available' });
@@ -43,32 +48,23 @@ router.get('/spotify-getplaylist', ensureAuthenticated, async (req, res) => {
             }
         });
 
-        console.log('Response received');
+        console.log("Response Recieved")
         if (!response.ok) {
             throw new Error('HTTP error ' + response.status);
         }
 
         const data = await response.json();
-        console.log('Data received:', data);
-        
-        const playlists = data.items.map(playlist => ({
+        res.json(data.items.map(playlist => ({
             title: playlist.name,
             tracksUrl: playlist.tracks.href,
             playlistId: playlist.id 
-        }));
-
-        // Example of logging playlists
-        playlists.forEach(playlist => {
-            console.log(`Title: ${playlist.title}, Tracks URL: ${playlist.tracksUrl}`);
-            console.log(`id: ${playlist.playlistId}`);
-        });
-
-        res.json(playlists);
+        })));
     } catch (error) {
         console.error('Error fetching playlists:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 // Route to migrate playlists from Spotify to YouTube
 router.post('/Migrate', async (req, res) => {
