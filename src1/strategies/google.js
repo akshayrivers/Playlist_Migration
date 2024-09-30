@@ -11,15 +11,28 @@ passport.use(
       callbackURL: process.env.GOOGLE_REDIRECT_URL,
       scope:['email','profile','https://www.googleapis.com/auth/youtube','https://www.googleapis.com/auth/youtube.force-ssl'],
     },
-    function(accessToken, refreshToken, params, profile, done) {
+    async function(accessToken, refreshToken, params, profile, done) {
       try {
         profile.accessToken = accessToken;
         profile.refreshToken = refreshToken;
-        profile.tokenExpiresAt = Date.now() + params.expires_in * 1000; 
+        profile.tokenExpiresAt = Date.now() + 3600 * 1000; // Example expiration
 
         console.log('Google access token acquired.');
-        process.env.gtoken=accessToken;
-        console.log(profile);
+
+        // Prepare token data
+        const tokenData = {
+          userId: profile.id,
+          accessToken,
+          refreshToken,
+          tokenExpiresAt: new Date(Date.now() + 3600 * 1000),
+        };
+
+        await GoogleToken.findOneAndUpdate(
+          { userId: profile.id }, // Search for an existing record
+          tokenData,              // Update with new data
+          { upsert: true, new: true }  // Insert if it doesn't exist
+        );
+
         done(null, profile);
       } catch (error) {
         console.error('Error in Google strategy:', error);
