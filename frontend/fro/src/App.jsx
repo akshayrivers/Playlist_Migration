@@ -18,8 +18,8 @@ function App() {
       console.log('Raw response:', response);
       setPlaylists(response.data);
       console.log('Playlists fetched:', response.data);
-
-    } 
+      
+     
   };
 
   // Handle migration
