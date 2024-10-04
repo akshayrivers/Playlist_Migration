@@ -15,6 +15,7 @@ function App() {
       const response = await axios.get('https://ab06-14-139-61-131.ngrok-free.app/request/spotify-getplaylist', {
         withCredentials: true, 
       });
+      console.log('Raw response:', response);
       setPlaylists(response.data);
       console.log('Playlists fetched:', response.data);
 
