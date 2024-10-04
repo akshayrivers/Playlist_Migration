@@ -19,10 +19,7 @@ function App() {
       setPlaylists(response.data);
       console.log('Playlists fetched:', response.data);
 
-    } catch (error) {
-      console.error('Error fetching playlists:', error.response?.data || error.message);
-      alert('Failed to fetch playlists. Please ensure you are authenticated.');
-    }
+    } 
   };
 
   // Handle migration
